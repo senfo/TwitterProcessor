@@ -29,7 +29,7 @@ public class TwitterDataProvider implements Serializable {
     private String tokenString;
 
     /**
-     * Initializes a new instance of the TwitterDataProvider class. Requires a registered app on http://dev.twitter.com
+     * Initializes a new instance of the {@link TwitterDataProvider} class. Requires a registered app on http://dev.twitter.com
      * @param consumerKey Twitter consumer key
      * @param consumerSecret Twitter consumer secret
      * @param token Twitter app token

@@ -11,6 +11,7 @@
     <modules>
         <module>twitter</module>
         <module>spark</module>
+        <module>stormdemo</module>
     </modules>
 
     <build>

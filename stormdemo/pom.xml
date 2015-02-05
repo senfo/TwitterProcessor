@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>twitterdemo</artifactId>
+        <groupId>com.advancedtechnicalengineering</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>stormdemo</artifactId>
+
+    <properties>
+        <hbc-twitter4j.version>2.2.0</hbc-twitter4j.version>
+        <storm-core.version>0.9.3</storm-core.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.twitter</groupId>
+            <artifactId>hbc-twitter4j</artifactId>
+            <version>${hbc-twitter4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.storm</groupId>
+            <artifactId>apache-storm-source</artifactId>
+            <version>${storm-core.version}</version>
+        </dependency>
+        <!-- Internal dependencies -->
+        <dependency>
+            <groupId>com.advancedtechnicalengineering</groupId>
+            <artifactId>twitterdemo</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+</project>
