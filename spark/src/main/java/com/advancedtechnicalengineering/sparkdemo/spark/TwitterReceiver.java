@@ -40,7 +40,7 @@ public class TwitterReceiver extends Receiver<String> {
 
     @Override
     public void onStart() {
-        List<String> terms = Lists.newArrayList("WhosGonnaWin", "Super Bowl");
+        List<String> terms = Lists.newArrayList("Twitter Storm", "Spark");
         BlockingQueue<String> msgQueue = provider.getMsgQueue();
         provider.connect(terms);
 
