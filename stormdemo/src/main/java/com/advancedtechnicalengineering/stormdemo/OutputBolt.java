@@ -16,22 +16,19 @@ public class OutputBolt implements IRichBolt {
 
     @Override
     public void prepare(Map map, TopologyContext topologyContext, OutputCollector outputCollector) {
-
     }
 
     @Override
     public void execute(Tuple tuple) {
-        System.out.println(tuple.toString());
+        System.out.println(tuple.getString(0));
     }
 
     @Override
     public void cleanup() {
-
     }
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
-
     }
 
     @Override
