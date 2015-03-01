@@ -29,6 +29,8 @@ public class TwitterIngestTopology {
 
         builder.setSpout(TwitterSpout.NAME, new TwitterSpout(consumerKey, consumerSecret, token, tokenString, terms));
         builder.setBolt(OutputBolt.NAME, new OutputBolt()).fieldsGrouping(TwitterSpout.NAME, new Fields("status"));
+        builder.setBolt(WordsBolt.NAME, new WordsBolt()).shuffleGrouping(TwitterSpout.NAME);
+        builder.setBolt(RedisPersistenceBolt.NAME, new RedisPersistenceBolt()).shuffleGrouping(WordsBolt.NAME);
 
         if (args.length > 0 && args[0].equals("local")) {
             LocalCluster cluster = new LocalCluster();

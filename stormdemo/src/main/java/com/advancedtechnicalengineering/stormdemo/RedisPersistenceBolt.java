@@ -2,40 +2,33 @@ package com.advancedtechnicalengineering.stormdemo;
 
 import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
-import backtype.storm.topology.IRichBolt;
 import backtype.storm.topology.OutputFieldsDeclarer;
+import backtype.storm.topology.base.BaseRichBolt;
 import backtype.storm.tuple.Tuple;
-import twitter4j.Status;
+import redis.clients.jedis.Jedis;
 
 import java.util.Map;
 
 /**
- * Simple bolt that outputs tuples as a string
+ * Persists data to a redis database
  */
-public class OutputBolt implements IRichBolt {
-    public static final String NAME = "OutputBolt";
+public class RedisPersistenceBolt extends BaseRichBolt {
+    public static final String NAME = "RedisPersistenceBolt";
+    private Jedis jedis;
 
     @Override
     public void prepare(Map map, TopologyContext topologyContext, OutputCollector outputCollector) {
+        jedis = new Jedis("localhost");
     }
 
     @Override
     public void execute(Tuple tuple) {
-        Status status = (Status)tuple.getValueByField("status");
+        String word = tuple.getStringByField("word");
 
-        System.out.println(status.getText());
-    }
-
-    @Override
-    public void cleanup() {
+        jedis.incr(String.format("words:%s", word));
     }
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
-    }
-
-    @Override
-    public Map<String, Object> getComponentConfiguration() {
-        return null;
     }
 }

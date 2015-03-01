@@ -15,6 +15,7 @@ import java.util.Map;
  * Breaks down individual words and outputs them
  */
 public class WordsBolt extends BaseRichBolt {
+    public static final String NAME = "WordsBolt";
     private OutputCollector collector;
 
     @Override
