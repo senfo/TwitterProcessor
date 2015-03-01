@@ -1,15 +1,8 @@
 package com.advancedtechnicalengineering.sparkdemo.twitter;
 
-import com.twitter.hbc.ClientBuilder;
-import com.twitter.hbc.core.Client;
-import com.twitter.hbc.core.Constants;
-import com.twitter.hbc.core.Hosts;
-import com.twitter.hbc.core.HttpHosts;
-import com.twitter.hbc.core.endpoint.StatusesFilterEndpoint;
 import com.twitter.hbc.core.event.Event;
-import com.twitter.hbc.core.processor.StringDelimitedProcessor;
-import com.twitter.hbc.httpclient.auth.Authentication;
-import com.twitter.hbc.httpclient.auth.OAuth1;
+import twitter4j.*;
+import twitter4j.conf.ConfigurationBuilder;
 
 import java.io.Serializable;
 import java.util.List;
@@ -20,9 +13,8 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Provides a data source for Twitter streams
  */
 public class TwitterDataProvider implements Serializable {
-    private Client client;
-    private BlockingQueue<String> msgQueue = new LinkedBlockingQueue<>(100000);
-    private BlockingQueue<Event> eventQueue = new LinkedBlockingQueue<>(1000);
+    private TwitterStream twitterStream;
+    private BlockingQueue<Status> statusQueue = new LinkedBlockingQueue<>(100000);
     private String consumerKey;
     private String consumerSecret;
     private String token;
@@ -46,42 +38,44 @@ public class TwitterDataProvider implements Serializable {
      * Connects to Twitter and starts listening
      */
     public void connect(List<String> terms) {
-        Hosts hosts = new HttpHosts(Constants.STREAM_HOST);
-        StatusesFilterEndpoint endpoint = new StatusesFilterEndpoint();
-        Authentication authentication = new OAuth1(consumerKey, consumerSecret, token, tokenString);
-        ClientBuilder clientBuilder = new ClientBuilder()
-                .name("SparkDemo-Client")
-                .hosts(hosts)
-                .authentication(authentication)
-                .endpoint(endpoint)
-                .processor(new StringDelimitedProcessor(msgQueue))
-                .eventMessageQueue(eventQueue);
-        client = clientBuilder.build();
+        ConfigurationBuilder cb = new ConfigurationBuilder();
+        StatusListener listener = new StatusListener() {
+            public void onStatus(Status status) {
+                statusQueue.add(status);
+            }
+            public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {}
+            public void onTrackLimitationNotice(int numberOfLimitedStatuses) {}
+            public void onScrubGeo(long userId, long upToStatusId) {}
+            public void onStallWarning(StallWarning warning) {}
+            public void onException(Exception ex) {
+                ex.printStackTrace();
+            }
+        };
 
-        endpoint.trackTerms(terms);
-        client.connect();
+        // Authentication
+        cb.setOAuthConsumerKey(consumerKey)
+                .setOAuthConsumerSecret(consumerSecret)
+                .setOAuthAccessToken(token)
+                .setOAuthAccessTokenSecret(tokenString);
+
+        twitterStream = new TwitterStreamFactory(cb.build()).getInstance();
+        twitterStream.addListener(listener);
+
+        twitterStream.sample();
     }
 
     /**
      * Disconnects from the Twitter stream
      */
     public void disconnect() {
-        client.stop();
+        twitterStream.shutdown();
     }
 
     /**
      * Gets the queue containing String messages from Twitter
      * @return The queue containing String messages from Twitter
      */
-    public BlockingQueue<String> getMsgQueue() {
-        return msgQueue;
-    }
-
-    /**
-     * Gets the queue containing events from Twitter
-     * @return The queue containing events from Twitter
-     */
-    public BlockingQueue<Event> getEventQueue() {
-        return eventQueue;
+    public BlockingQueue<Status> getStatusQueue() {
+        return statusQueue;
     }
 }

@@ -1,6 +1,7 @@
 package com.advancedtechnicalengineering.sparkdemo.twitter;
 
 import com.google.common.collect.Lists;
+import twitter4j.Status;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -26,7 +27,8 @@ public class Demo implements Runnable {
         String tokenString = properties.getProperty("tokenString");
         List<String> terms = Lists.newArrayList("WhosGonnaWin", "Super Bowl");
         TwitterDataProvider provider = new TwitterDataProvider(consumerKey, consumerSecret, token, tokenString);
-        BlockingQueue<String> msgQueue = provider.getMsgQueue();
+        BlockingQueue<Status> msgQueue = provider.getStatusQueue();
+        Status status;
 
         provider.connect(terms);
 
@@ -34,7 +36,8 @@ public class Demo implements Runnable {
             if (!msgQueue.isEmpty()) {
                 try {
                     tweetCount++;
-                    System.out.println(msgQueue.take());
+                    status = msgQueue.take();
+                    System.out.println(status.getText());
                 }
                 catch (InterruptedException e) {
                     throw new RuntimeException(e);

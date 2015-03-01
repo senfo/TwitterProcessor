@@ -8,6 +8,7 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 import backtype.storm.utils.Utils;
 import com.advancedtechnicalengineering.sparkdemo.twitter.TwitterDataProvider;
+import twitter4j.Status;
 
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,7 @@ import java.util.concurrent.BlockingQueue;
 public class TwitterSpout extends BaseRichSpout {
     public static final String NAME = "TwitterSpout";
     private SpoutOutputCollector collector;
-    private BlockingQueue<String> queue;
+    private BlockingQueue<Status> queue;
     private TwitterDataProvider dataProvider;
     private List<String> terms;
 
@@ -44,7 +45,7 @@ public class TwitterSpout extends BaseRichSpout {
 
     @Override
     public void open(Map map, TopologyContext topologyContext, SpoutOutputCollector spoutOutputCollector) {
-        this.queue = dataProvider.getMsgQueue();
+        this.queue = dataProvider.getStatusQueue();
         this.collector = spoutOutputCollector;
 
         this.dataProvider.connect(this.terms);
@@ -52,7 +53,7 @@ public class TwitterSpout extends BaseRichSpout {
 
     @Override
     public void nextTuple() {
-        String status = queue.poll();
+        Status status = queue.poll();
 
         if (status != null) {
             this.collector.emit(new Values(status));
