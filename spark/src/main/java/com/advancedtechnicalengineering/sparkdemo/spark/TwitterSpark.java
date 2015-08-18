@@ -13,7 +13,7 @@ import java.util.Properties;
  */
 public class TwitterSpark {
     public static void main(String[] args) {
-        long timeout = 5000;
+        final long timeout = 5000;
         Properties properties = getProperties();
         String consumerKey = properties.getProperty("consumerKey");
         String consumerSecret = properties.getProperty("consumerSecret");

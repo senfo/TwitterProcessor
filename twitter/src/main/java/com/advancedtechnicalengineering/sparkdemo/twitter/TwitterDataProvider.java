@@ -1,6 +1,5 @@
 package com.advancedtechnicalengineering.sparkdemo.twitter;
 
-import com.twitter.hbc.core.event.Event;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
 
