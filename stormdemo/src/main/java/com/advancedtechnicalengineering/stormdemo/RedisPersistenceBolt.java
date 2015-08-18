@@ -25,7 +25,7 @@ public class RedisPersistenceBolt extends BaseRichBolt {
     public void execute(Tuple tuple) {
         String word = tuple.getStringByField("word");
 
-        jedis.incr(String.format("words:%s", word));
+        jedis.incr(String.format("words:%s", word.toLowerCase()));
     }
 
     @Override
