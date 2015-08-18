@@ -2,11 +2,9 @@ package com.advancedtechnicalengineering.sparkdemo.spark;
 
 import com.advancedtechnicalengineering.sparkdemo.twitter.TwitterDataProvider;
 import com.google.common.collect.Lists;
-import com.twitter.hbc.twitter4j.parser.JSONObjectParser;
 import org.apache.spark.storage.StorageLevel;
 import org.apache.spark.streaming.receiver.Receiver;
-import twitter4j.JSONException;
-import twitter4j.JSONObject;
+import twitter4j.Status;
 
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -41,7 +39,7 @@ public class TwitterReceiver extends Receiver<String> {
     @Override
     public void onStart() {
         List<String> terms = Lists.newArrayList("WhosGonnaWin", "Super Bowl");
-        BlockingQueue<String> msgQueue = provider.getMsgQueue();
+        BlockingQueue<Status> msgQueue = provider.getStatusQueue();
         provider.connect(terms);
 
         new Thread() {
@@ -56,16 +54,15 @@ public class TwitterReceiver extends Receiver<String> {
         provider.disconnect();
     }
 
-    private void receive(BlockingQueue<String> msgQueue) {
+    private void receive(BlockingQueue<Status> msgQueue) {
         while (true) {
             if (!msgQueue.isEmpty()) {
                 try {
-                    String tweet = msgQueue.take();
-                    JSONObject json = new JSONObject(tweet);
-                    //JSONObjectParser parser = new
-                    store(msgQueue.take());
+                    Status status = msgQueue.take();
+
+                    store(status.getText());
                 }
-                catch (InterruptedException | JSONException e) {
+                catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
             }
